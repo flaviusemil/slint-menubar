@@ -1,0 +1,27 @@
+import { MenuBar } from "menubar.slint";
+
+export component MainWindow inherits Window {
+    width: 400px;
+    height: 300px;
+    title: "Slint Menu Example";
+
+    callback menu_item_clicked(string);
+
+    VerticalLayout {
+        MenuBar {
+            items: [
+                {
+                    text: "File",
+                    children: [
+                        {
+                            text: "Open"
+                        }
+                    ]
+                },
+                { text: "Edit" },
+                { text: "View" }
+            ];
+            clicked(item) => { root.menu_item_clicked(item); }
+        }
+    }
+}

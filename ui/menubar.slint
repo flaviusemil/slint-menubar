@@ -1,0 +1,103 @@
+struct MenuItem {
+    text: string
+}
+
+struct MenuGroup {
+    text: string,
+    children: [MenuItem]
+}
+
+component MenuItem {
+
+    in property <string> text;
+    in property <brush> color;
+
+    callback clicked(string);
+
+    TouchArea {
+        Text {
+            color: color;
+            text: text;
+        }
+
+        clicked => { clicked(text); }
+    }
+}
+
+component MenuGroup {
+
+    in property <string> text;
+    in property <[MenuItem]> children;
+
+    callback clicked(string);
+
+    TouchArea {
+        Text {
+            text: text;
+        }
+
+        submenu := PopupWindow {
+            y: 18px;
+            width: 50px;
+            close-policy: close-on-click;
+
+            Rectangle {
+                height: 100%;
+                width: 100%;
+                background: #00000050;
+
+                VerticalLayout {
+                    alignment: start;
+                    padding-top: 5px;
+                    padding-bottom: 5px;
+
+                    for menuItem in children: MenuItem {
+                        text: menuItem.text;
+                        color: white;
+
+                        clicked(item) => {
+                            root.clicked(item);
+                        }
+                    }
+                }
+            }
+        }
+
+        clicked => {
+            if (children.length > 0) {
+                submenu.show();
+            } else {
+                root.clicked(text);
+            }
+        }
+    }
+}
+
+export component MenuBar {
+    width: 100%;
+    height: 20px;
+
+    in property <[MenuGroup]> items;
+
+
+    callback clicked(string);
+
+    Rectangle {
+        width: 100%;
+        height: 100%;
+        background: #00000050;
+
+        HorizontalLayout {
+            padding-left: 10px;
+            padding-top: 3px;
+            alignment: start;
+            spacing: 5px;
+
+            for menuGroup in items: MenuGroup {
+                text: menuGroup.text;
+                children: menuGroup.children;
+                clicked(item) => { root.clicked(item); }
+            }
+        }
+    }
+}
